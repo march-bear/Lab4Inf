@@ -1,6 +1,5 @@
-from linpars import LinParsJSON, LinParsJAML
+from linpars import LinParsJSON, LinParsYAML
 from conv import ConvToXML
-import json
 
 
 def print_dict(format_dict, level):
@@ -13,38 +12,60 @@ def print_dict(format_dict, level):
             print(value)
 
 
-def main():
+def parse_json():
     try:
-        with open("schedule.json", encoding="utf8") as json_file:
-            json_format = json_file.read().strip()
+        with open(f"schedule.json", encoding="utf8") as schedule_file:
+            format_code = schedule_file.read().strip()
     except FileNotFoundError:
         raise FileNotFoundError("файл с расписанием не найден")
 
     try:
-        python_format = LinParsJSON.read_elem(json_format, 0)[0]
+        python_format = LinParsJSON.read_elem(format_code, 0)[0]
     except Exception:
-        raise Exception("ошибка конвертации в python-формат. Возможно в файле schedule.json ошибка")
+        raise Exception("ошибка конвертации в python-формат. Возможно, в файле schedule.json ошибка")
 
-    for elem in python_format:
-        print_dict(elem, 0)
-
-    python_format_standard = json.loads(json_format)
-    print(python_format_standard)
-
-    ConvToXML.write_format(python_format)
+    return python_format
 
 
-if __name__ == "__main__":
-    # main()
+def parse_yml():
     try:
         with open("schedule.yml", encoding="utf8") as yaml_file:
             yaml_file_text = yaml_file.read().strip()
     except FileNotFoundError:
         raise FileNotFoundError("файл с расписанием не найден")
-    yaml_format = LinParsJAML.split_into_lines(LinParsJAML.del_comm(yaml_file_text))
-    print(yaml_format)
-    python_format = LinParsJAML.read_elem(yaml_format, 0)[0]
-    print(python_format)
-    for i in python_format:
-        print_dict(i, 0)
+
+    try:
+        yaml_format = LinParsYAML.split_into_lines(LinParsYAML.del_comm(yaml_file_text))
+    except Exception:
+        raise Exception("ошибка конвертации в python-формат. Возможно, в файлу schedule.yaml ошибка")
+
+    return LinParsJAML.read_elem(yaml_format, 0)[0]
+
+
+def main():
+    while True:
+        try:
+            print("Выберите формат (yml, json): ", end='')
+            format_name = input()
+            if format_name in ('yml', 'json'):
+                break
+            print("Повторите ввод: ", end='')
+        except (EOFError, KeyboardInterrupt):
+            print()
+            print("Повторите ввод: ", end='')
+
+    python_format = eval(f'parse_{format_name}()')
+
+    print()
+    print("Конвертация в python-формат прошла успешна. Форматированный вывод полученного формата: ", end='\n\n')
+    for elem in python_format:
+        print_dict(elem, 0)
+        print()
+
+    print()
     ConvToXML.write_format(python_format)
+    print("Файл schedule.xml создан")
+
+
+if __name__ == "__main__":
+    main()
