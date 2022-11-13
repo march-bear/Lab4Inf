@@ -1,22 +1,31 @@
 import re
 from itertools import chain
 
-arr_pattern = re.compile(r'(( )*- .*\n)', re.DOTALL)
 
 class RegParsYAML:
+    pair_pattern = re.compile(r'(.+): (.+)', re.DOTALL)
+    obj_pattern = re.compile(r'', re.DOTALL)
+    arr_pattern = re.compile(r'(?:- ())', re.DOTALL)
+    num_pattern = re.compile(r'-?[0-9]+(?:.[0-9]+(?:[eE][0-9]+)?)?', re.DOTALL)
+    str_pattern = re.compile(r'.+')
+
     @staticmethod
-    def read_obj():
+    def read_pair(src):
         pass
 
     @staticmethod
-    def read_arr():
+    def read_obj(src):
         pass
 
     @staticmethod
-    def read_elem():
+    def read_arr(src):
+        pass
+
+    @staticmethod
+    def read_elem(src):
         for i in chain():
             pass
 
 
 if __name__ == "__main__":
-    print(*arr_pattern.findall("- time:\n    - time_start: '8:20'\n    time_end: '9:50'\n- room:\n    - number:\nbuilding_address:"), sep='\n')
+    pass
