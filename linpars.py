@@ -75,7 +75,7 @@ class LinParsJSON:
             return LinParsJSON.read_literal(text, index)
 
 
-class LinParsJAML:
+class LinParsYAML:
     @staticmethod
     def del_comm(text):
         stack = ''
@@ -163,21 +163,21 @@ class LinParsJAML:
 
         while i < len(text) and text[i][1] >= level_dict and text[i][0][0] != '-':
             if text[i][0][-1] == ':':
-                key = LinParsJAML.remove_quotes(text[i][0][:-1])
+                key = LinParsYAML.remove_quotes(text[i][0][:-1])
                 if i < len(text):
                     if text[i + 1][1] <= level_dict and text[i + 1][0] != '-':
                         value = None
                         i += 1
                     else:
-                        value, i = LinParsJAML.read_elem(text, i + 1)
+                        value, i = LinParsYAML.read_elem(text, i + 1)
                 else:
                     value = None
                     i += 1
             else:
-                key, value = map(LinParsJAML.remove_quotes, text[i][0].split(': ', 1))
+                key, value = map(LinParsYAML.remove_quotes, text[i][0].split(': ', 1))
 
                 if isinstance(value, str):
-                    value, _ = LinParsJAML.read_string([(value,)], 0)
+                    value, _ = LinParsYAML.read_string([(value,)], 0)
 
                 i += 1
             dict_[key] = value
@@ -207,18 +207,18 @@ class LinParsJAML:
                     arr.append(elem)
                     i += 1
                     break
-            elem, i = LinParsJAML.read_elem(text, i)
+            elem, i = LinParsYAML.read_elem(text, i)
             if isinstance(elem, str):
-                elem, _ = LinParsJAML.read_string([(elem,)], 0)
+                elem, _ = LinParsYAML.read_string([(elem,)], 0)
             arr.append(elem)
 
         return arr, i
 
     @staticmethod
     def read_string(text, index):
-        string = LinParsJAML.remove_quotes(text[index][0])
-        number = LinParsJAML.to_number(string)
-        literal = LinParsJAML.to_literal(string)
+        string = LinParsYAML.remove_quotes(text[index][0])
+        number = LinParsYAML.to_number(string)
+        literal = LinParsYAML.to_literal(string)
 
         if string != literal:
             return literal, index + 1
@@ -231,11 +231,11 @@ class LinParsJAML:
         if text[index][0] == '':
             return None, index + 1
         elif text[index][0][0] == '-':
-            return LinParsJAML.read_arr(text, index)
-        elif LinParsJAML.separating_colon(text[index][0]) or text[index][0][-1] == ':':
-            return LinParsJAML.read_dict(text, index)
+            return LinParsYAML.read_arr(text, index)
+        elif LinParsYAML.separating_colon(text[index][0]) or text[index][0][-1] == ':':
+            return LinParsYAML.read_dict(text, index)
         else:
-            return LinParsJAML.read_string(text, index)
+            return LinParsYAML.read_string(text, index)
 
 
 if __name__ == "__main__":
