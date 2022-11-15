@@ -1,5 +1,6 @@
 from linpars import LinParsJSON, LinParsYAML
 from conv import ConvToXML
+import yaml
 
 
 def print_dict(format_dict, level):
@@ -39,7 +40,7 @@ def parse_yml():
     except Exception:
         raise Exception("ошибка конвертации в python-формат. Возможно, в файлу schedule.yaml ошибка")
 
-    return LinParsJAML.read_elem(yaml_format, 0)[0]
+    return LinParsYAML.read_elem(yaml_format, 0)[0]
 
 
 def main():
