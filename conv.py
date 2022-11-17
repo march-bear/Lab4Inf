@@ -33,5 +33,45 @@ class ConvToXML:
         xml_file.close()
 
 
-if __name__ == "__main__":
-    pass
+class ConvToCSV:
+    @staticmethod
+    def write_values(python_format):
+        print("EFE")
+        tags = ConvToCSV.define_tags(python_format[0], '')
+        values = ConvToCSV.define_values(python_format)
+        csv_file = open("schedule.csv", 'w', encoding='utf8')
+        print(*tags, sep=',', file=csv_file)
+        for elem in values:
+            print(*elem, sep=',', file=csv_file)
+        csv_file.close()
+
+    @staticmethod
+    def define_values(python_format):
+        values = []
+
+        def define_other_values(format_dict):
+            other_values = []
+            print(format_dict)
+            for _, value in format_dict.items():
+                if isinstance(value, dict):
+                    other_values += define_other_values(value)
+                else:
+                    if value is None:
+                        value = ''
+                    other_values.append(value)
+            return other_values
+
+        for elem in python_format:
+            values.append(define_other_values(elem))
+        return values
+
+    @staticmethod
+    def define_tags(format_dict, prefix):
+        tags = []
+        for key, value in format_dict.items():
+            if isinstance(value, dict):
+                tags += ConvToCSV.define_tags(value, f'{prefix}{key}/')
+            else:
+                tags.append(prefix + key)
+        return tags
+
